@@ -1,0 +1,64 @@
+export interface StoreFormState {
+    id: string;
+    name: string;
+    city: string;
+}
+
+interface StoreFormProps {
+    values: StoreFormState;
+    onChange: (field: keyof StoreFormState, value: string) => void;
+    onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+    onCancel: () => void;
+}
+
+export function StoreForm({ values, onChange, onSubmit, onCancel }: StoreFormProps) {
+    const isEditing = !!values.id;
+
+    return (
+        <form onSubmit={onSubmit} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/40 space-y-4 shadow-xs">
+            <h2 className="text-title-medium font-bold text-on-surface">
+                {isEditing ? 'Editar Loja' : 'Nova Loja'}
+            </h2>
+
+            <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-on-surface-variant">Nome da Unidade</label>
+                <input
+                    type="text"
+                    value={values.name}
+                    onChange={(e) => onChange('name', e.target.value)}
+                    placeholder="Ex: Unidade Moema"
+                    className="px-3 py-2 rounded-xl bg-surface-container border border-outline/20 text-sm focus:outline-primary w-full"
+                />
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-on-surface-variant">Cidade</label>
+                <input
+                    type="text"
+                    value={values.city}
+                    onChange={(e) => onChange('city', e.target.value)}
+                    placeholder="Ex: São Paulo"
+                    className="px-3 py-2 rounded-xl bg-surface-container border border-outline/20 text-sm focus:outline-primary w-full"
+                />
+            </div>
+
+            <div className="flex gap-2 pt-2">
+                <button
+                    type="submit"
+                    className="flex-1 py-2 bg-primary text-on-primary font-semibold text-sm rounded-xl hover:bg-primary-hover transition-all cursor-pointer"
+                >
+                    {isEditing ? 'Atualizar Loja' : 'Salvar Loja'}
+                </button>
+                {isEditing && (
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="px-3 py-2 border border-outline text-on-surface font-semibold text-sm rounded-xl hover:bg-surface-container transition-all cursor-pointer"
+                    >
+                        Cancelar
+                    </button>
+                )}
+            </div>
+        </form>
+    );
+}

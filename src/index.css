@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #8d0018;
+  --color-primary-container: #b90023;
+  --color-on-primary: #ffffff;
+
+  --color-status-pending: #F59E0B;
+  --color-status-in-progress: #3B82F6;
+  --color-status-done: #10B981;
+}
+
+.paw-watermark {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12,2.5C10.62,2.5 9.5,3.62 9.5,5C9.5,6.38 10.62,7.5 12,7.5C13.38,7.5 14.5,6.38 14.5,5C14.5,3.62 13.38,2.5 12,2.5M7,5.5C5.62,5.5 4.5,6.62 4.5,8C4.5,9.38 5.62,10.5 7,10.5C8.38,10.5 9.5,9.38 9.5,8C9.5,6.62 8.38,5.5 7,5.5M17,5.5C15.62,5.5 14.5,6.62 14.5,8C14.5,9.38 15.62,10.5 17,10.5C18.38,10.5 19.5,9.38 19.5,8C19.5,6.62 18.38,5.5 17,5.5M12,11.5C9.24,11.5 7,13.74 7,16.5C7,19.26 9.24,21.5 12,21.5C14.76,21.5 17,19.26 17,16.5C17,13.74 14.76,11.5 12,11.5Z'/%3E%3C/svg%3E");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  background-color: currentColor;
+  opacity: 0.02;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+}
