@@ -9,10 +9,10 @@ interface SegmentedPickerProps {
 
 export function SegmentedPicker({ activeStatus, setActiveStatus }: SegmentedPickerProps) {
   const tabs = [
-    { id: 'PENDING' as const, icon: 'pending_actions', label: 'Pendentes' },
-    { id: 'IN_PROGRESS' as const, icon: 'precision_manufacturing', label: 'Em Produção' },
+    { id: 'PENDING' as const, icon: 'assignment', label: 'Pendentes' },
+    { id: 'IN_PROGRESS' as const, icon: 'rocket_launch', label: 'Em Produção' },
     { id: 'DONE' as const, icon: 'task_alt', label: 'Concluídos' },
-    { id: 'ARCHIVED' as const, icon: 'archive', label: 'Arquivados' },
+    { id: 'ARCHIVED' as const, icon: 'inventory_2', label: 'Arquivados' },
   ];
 
   return (

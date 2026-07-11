@@ -99,26 +99,30 @@ export function Dashboard() {
             onCardClick={setSelectedTask}
           />
         </div>
-      </main>
 
-      {activeStatus === 'ARCHIVED' && (
-        <>
-          <div
-            onClick={() => setActiveStatus('PENDING')}
-            className="hidden md:block fixed inset-0 bg-black/10 backdrop-blur-xs z-40 animate-[fadeIn_0.2s_ease-out]"
-          />
-          <div className="relative w-full h-auto md:fixed md:top-0 md:right-0 md:z-50 md:w-96 md:h-full bg-surface-container-lowest p-4 md:p-6 md:shadow-2xl md:border-l md:border-outline-variant animate-[fadeIn_0.3s_ease-out] md:animate-[slideIn_0.2s_ease-out] flex flex-col">
-            <KanbanColumn
-              title="Arquivados"
-              tasks={archivedTasks}
-              isActiveInMobile={activeStatus === 'ARCHIVED'}
-              onArchiveTask={handleUnarchiveTask}
-              onCloseDrawer={() => setActiveStatus('PENDING')}
-              onCardClick={setSelectedTask}
+        {activeStatus === 'ARCHIVED' && (
+          <>
+            <div
+              onClick={() => setActiveStatus('PENDING')}
+              className="hidden md:block fixed inset-0 bg-black/10 md:backdrop-blur-sm z-40 animate-[fadeIn_0.2s_ease-out]"
             />
-          </div>
-        </>
-      )}
+            <div className="
+            w-full flex 
+            md:fixed md:top-0 md:right-0 md:z-50 md:w-96 md:h-full
+            md:bg-surface-container-lowest md:p-6 md:shadow-2xl md:border-l md:border-outline-variant
+          ">
+              <KanbanColumn
+                title="Arquivados"
+                tasks={archivedTasks}
+                isActiveInMobile={true}
+                onArchiveTask={handleUnarchiveTask}
+                onCloseDrawer={() => setActiveStatus('PENDING')}
+                onCardClick={setSelectedTask}
+              />
+            </div>
+          </>
+        )}
+      </main>
 
       <FloatingActionButton icon="add" onClick={() => setIsTaskModalOpen(true)} />
       <TaskModal isOpen={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} onAddTask={handleAddTask} />
