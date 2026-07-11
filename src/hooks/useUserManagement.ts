@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, getDocs, doc, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { db, secondaryAuth } from '../lib/firebase';
 import type { RoleType } from '../types';
 import type { MockUser, MockStore } from '../pages/UserManagement';
@@ -141,11 +141,19 @@ export function useUserManagement() {
                     store_id: userForm.department === 'MANAGER' ? userForm.store_id : null
                 });
             } else {
-                // Cria o usuário no Firebase Auth
-                const authResult = await createUserWithEmailAndPassword(secondaryAuth, userForm.email, '123456');
-                const uid = authResult.user.uid;
+                // 1. Gera uma senha aleatória forte e temporária de 12 caracteres
+                const temporaryPassword = Array.from(crypto.getRandomValues(new Uint8Array(6)))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
 
-                // Persiste no Firestore usando o UID como ID do documento
+                // 2. Cria o usuário no Firebase Auth usando a segunda instância
+                const authResult = await createUserWithEmailAndPassword(secondaryAuth, userForm.email, temporaryPassword);
+                
+                // 3. Envia e-mail de redefinição de senha para o usuário
+                await sendPasswordResetEmail(secondaryAuth, userForm.email);
+                
+                // 4. Salva os dados na coleção Firestore
+                const uid = authResult.user.uid;
                 const userRef = doc(db, 'users', uid);
                 await setDoc(userRef, {
                     name: userForm.name,
