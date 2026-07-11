@@ -97,8 +97,8 @@ export function TaskDetailsModal({
             }
             // Check if store_ids has changed
             const originalStoreIds = task.store_ids || [];
-            const hasStoresChanged = 
-                selectedStoreIds.length !== originalStoreIds.length || 
+            const hasStoresChanged =
+                selectedStoreIds.length !== originalStoreIds.length ||
                 !selectedStoreIds.every(id => originalStoreIds.includes(id));
             if (hasStoresChanged) {
                 await onUpdateStores(task.id, selectedStoreIds);
@@ -131,7 +131,7 @@ export function TaskDetailsModal({
 
             {/* Modal Body */}
             <div className="relative bg-white w-full md:max-w-md rounded-t-3xl md:rounded-2xl p-6 shadow-xl z-10 max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_cubic-bezier(0.4,0,0.2,1)] md:animate-none">
-                
+
                 {/* Drag handle on mobile */}
                 <div className="w-12 h-1 bg-surface-container rounded-full mx-auto mb-4 md:hidden" />
 
@@ -139,7 +139,7 @@ export function TaskDetailsModal({
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Detalhes da Demanda</h3>
                     <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container active:scale-90 transition-transform">
-                        <span className="material-symbols-rounded text-xl">close</span>
+                        <span className="material-symbols-outlined text-xl">close</span>
                     </button>
                 </div>
 
@@ -248,7 +248,7 @@ export function TaskDetailsModal({
                             disabled={saving}
                             className="w-full h-12 bg-primary text-on-primary font-label-md rounded-xl shadow-md active:scale-[0.98] transition-all font-bold flex items-center justify-center gap-2 mt-6 disabled:opacity-75 disabled:pointer-events-none"
                         >
-                            <span className="material-symbols-rounded text-xl">
+                            <span className="material-symbols-outlined text-xl">
                                 {saving ? 'hourglass_empty' : 'save'}
                             </span>
                             {saving ? 'Salvando...' : 'Salvar Alterações'}

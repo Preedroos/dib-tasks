@@ -32,7 +32,7 @@ export function StoreList({
                         onChange={(e) => onSearchChange(e.target.value)}
                         className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-surface-container border border-outline/20 text-xs focus:outline-primary placeholder:text-on-surface-variant/60 text-on-surface"
                     />
-                    <span className="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant/60">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant/60">
                         search
                     </span>
                 </div>
@@ -51,11 +51,10 @@ export function StoreList({
                         return (
                             <div
                                 key={store.id}
-                                className={`p-4 flex items-center justify-between transition-all duration-200 ${
-                                    isEditing
+                                className={`p-4 flex items-center justify-between transition-all duration-200 ${isEditing
                                         ? 'border-2 border-primary bg-primary/5 rounded-xl m-2 shadow-xs'
                                         : 'border-b border-outline-variant/30 hover:bg-surface-container-high/10 last:border-0'
-                                } ${!store.isActive && !isEditing ? 'opacity-50 bg-surface-container-low/40' : ''}`}
+                                    } ${!store.isActive && !isEditing ? 'opacity-50 bg-surface-container-low/40' : ''}`}
                             >
                                 <div>
                                     <div className="flex items-center gap-2">
@@ -71,17 +70,16 @@ export function StoreList({
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={() => onEdit(store)}
-                                        className="material-symbols-rounded text-on-surface-variant hover:text-primary text-[20px] cursor-pointer"
+                                        className="material-symbols-outlined text-on-surface-variant hover:text-primary text-[20px] cursor-pointer"
                                     >
                                         edit
                                     </button>
                                     <button
                                         onClick={() => onToggleStatus(store.id)}
-                                        className={`material-symbols-rounded text-[20px] cursor-pointer ${
-                                            store.isActive
+                                        className={`material-symbols-outlined text-[20px] cursor-pointer ${store.isActive
                                                 ? 'text-error hover:text-error-hover'
                                                 : 'text-success hover:text-success-hover'
-                                        }`}
+                                            }`}
                                     >
                                         {store.isActive ? 'toggle_on' : 'toggle_off'}
                                     </button>

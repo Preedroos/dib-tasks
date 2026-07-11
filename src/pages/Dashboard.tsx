@@ -65,7 +65,7 @@ export function Dashboard() {
             onClick={() => setActiveStatus('ARCHIVED')}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 cursor-pointer transition-all active:scale-95"
           >
-            <span className="material-symbols-rounded text-[18px]">archive</span>
+            <span className="material-symbols-outlined text-[18px]">archive</span>
             <span className="text-sm font-semibold">Exibir Arquivados</span>
           </button>
         </div>

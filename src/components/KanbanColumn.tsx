@@ -38,7 +38,7 @@ export function KanbanColumn({
             onClick={onCloseDrawer}
             className="hidden md:flex text-on-surface-variant hover:text-primary p-1 rounded-lg hover:bg-surface-container transition-all cursor-pointer"
           >
-            <span className="material-symbols-rounded text-lg">close</span>
+            <span className="material-symbols-outlined text-lg">close</span>
           </button>
         )}
       </div>

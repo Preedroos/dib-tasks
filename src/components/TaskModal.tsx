@@ -8,10 +8,10 @@ import type { PriorityType, Stores } from '../types';
 interface TaskModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAddTask: (taskData: { 
-        description: string; 
-        dueDate: string; 
-        priority: PriorityType; 
+    onAddTask: (taskData: {
+        description: string;
+        dueDate: string;
+        priority: PriorityType;
         storeIds?: string[];
     }) => void;
 }
@@ -114,7 +114,7 @@ export function TaskModal({ isOpen, onClose, onAddTask }: TaskModalProps) {
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Nova Demanda</h3>
                     <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container active:scale-90 transition-transform">
-                        <span className="material-symbols-rounded text-xl">close</span>
+                        <span className="material-symbols-outlined text-xl">close</span>
                     </button>
                 </div>
 
@@ -202,7 +202,7 @@ export function TaskModal({ isOpen, onClose, onAddTask }: TaskModalProps) {
                         type="submit"
                         className="w-full h-12 bg-primary text-on-primary font-label-md rounded-xl shadow-md active:scale-[0.98] transition-all font-bold flex items-center justify-center gap-2 mt-4"
                     >
-                        <span className="material-symbols-rounded text-xl">save</span>
+                        <span className="material-symbols-outlined text-xl">save</span>
                         Criar Tarefa
                     </button>
                 </form>

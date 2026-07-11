@@ -28,7 +28,7 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
   };
 
   return (
-    <div 
+    <div
       onClick={() => onClick(task)}
       className="bg-surface-container-lowest rounded-2xl p-4 shadow-sm border border-outline-variant relative overflow-hidden group cursor-pointer hover:border-primary/40 transition-colors"
     >
@@ -42,14 +42,14 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
 
         {task.due_date && (
           <span className="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1">
-            <span className="material-symbols-rounded text-[14px]">schedule</span>
+            <span className="material-symbols-outlined text-[14px]">schedule</span>
             {formatDueDate(task.due_date)}
           </span>
         )}
 
         {task.note && task.note.trim() !== '' && (
           <span className="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1" title="Possui notas administrativas">
-            <span className="material-symbols-rounded text-[16px]">notes</span>
+            <span className="material-symbols-outlined text-[16px]">notes</span>
           </span>
         )}
 
@@ -59,7 +59,7 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
             className="text-error/60 hover:text-error w-8 h-8 rounded-lg hover:bg-error/10 flex items-center justify-center active:scale-90 transition-all relative z-20"
             title="Apagar tarefa"
           >
-            <span className="material-symbols-rounded text-lg">delete</span>
+            <span className="material-symbols-outlined text-lg">delete</span>
           </button>
         ) : (
           <button
@@ -67,7 +67,7 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
             className="text-error/60 hover:text-error w-8 h-8 rounded-lg hover:bg-error/10 flex items-center justify-center active:scale-90 transition-all relative z-20"
             title="Arquivar tarefa"
           >
-            <span className="material-symbols-rounded text-lg">archive</span>
+            <span className="material-symbols-outlined text-lg">archive</span>
           </button>
         )}
 
@@ -89,7 +89,7 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
               className="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant active:scale-90 transition-transform"
               title="Voltar para Em Andamento"
             >
-              <span className="material-symbols-rounded text-lg">undo</span>
+              <span className="material-symbols-outlined text-lg">undo</span>
             </button>
           )}
 
@@ -99,7 +99,7 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
               className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-bold active:scale-90 transition-transform"
               title="Avançar etapa"
             >
-              <span className="material-symbols-rounded text-lg">arrow_forward</span>
+              <span className="material-symbols-outlined text-lg">arrow_forward</span>
             </button>
           )}
         </div>

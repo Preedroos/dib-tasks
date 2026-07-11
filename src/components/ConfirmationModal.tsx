@@ -26,9 +26,9 @@ export function ConfirmationModal({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-[fadeIn_0.2s_ease-out]">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity" 
-        onClick={onClose} 
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+        onClick={onClose}
       />
 
       {/* Modal Container */}
@@ -38,11 +38,11 @@ export function ConfirmationModal({
           <div className="flex items-center gap-3 mb-2">
             {variant === 'danger' ? (
               <div className="w-10 h-10 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                <span className="material-symbols-rounded text-[22px]">warning</span>
+                <span className="material-symbols-outlined text-[22px]">warning</span>
               </div>
             ) : (
               <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                <span className="material-symbols-rounded text-[22px]">info</span>
+                <span className="material-symbols-outlined text-[22px]">info</span>
               </div>
             )}
             <h3 className="text-lg font-bold text-on-surface">
@@ -71,11 +71,10 @@ export function ConfirmationModal({
               onConfirm();
               onClose();
             }}
-            className={`w-full sm:w-auto px-4 py-2.5 rounded-xl text-white text-sm font-semibold transition-all cursor-pointer active:scale-95 text-center ${
-              variant === 'danger'
+            className={`w-full sm:w-auto px-4 py-2.5 rounded-xl text-white text-sm font-semibold transition-all cursor-pointer active:scale-95 text-center ${variant === 'danger'
                 ? 'bg-red-600 hover:bg-red-700 active:bg-red-800 shadow-sm'
                 : 'bg-primary hover:bg-primary-container active:bg-primary text-on-primary shadow-sm'
-            }`}
+              }`}
           >
             {confirmText}
           </button>

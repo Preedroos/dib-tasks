@@ -18,17 +18,17 @@ export function Header({ actionIcon = 'settings_account_box', onActionClick, onL
             </div>
             <div className="flex gap-4">
                 {showActionButton && (
-                    <button 
-                        onClick={onActionClick} 
-                        className="material-symbols-rounded cursor-pointer text-on-primary active:scale-90 transition-all"
+                    <button
+                        onClick={onActionClick}
+                        className="material-symbols-outlined cursor-pointer text-on-primary active:scale-90 transition-all"
                         aria-label="Ação principal"
                     >
                         {actionIcon}
                     </button>
                 )}
-                <button 
-                    onClick={onLogout} 
-                    className="material-symbols-rounded cursor-pointer text-on-primary active:scale-90 transition-all"
+                <button
+                    onClick={onLogout}
+                    className="material-symbols-outlined cursor-pointer text-on-primary active:scale-90 transition-all"
                     aria-label="Sair"
                 >
                     logout

@@ -29,7 +29,7 @@ export function SegmentedPicker({ activeStatus, setActiveStatus }: SegmentedPick
               }`}
             title={tab.label}
           >
-            <span className={`material-symbols-rounded text-[22px] ${isActive ? 'font-bold' : ''}`}>
+            <span className={`material-symbols-outlined text-[22px] ${isActive ? 'font-bold' : ''}`}>
               {tab.icon}
             </span>
           </button>

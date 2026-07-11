@@ -34,7 +34,7 @@ export function UserList({
                         onChange={(e) => onSearchChange(e.target.value)}
                         className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-surface-container border border-outline/20 text-xs focus:outline-primary placeholder:text-on-surface-variant/60 text-on-surface"
                     />
-                    <span className="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant/60">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant/60">
                         search
                     </span>
                 </div>
@@ -88,13 +88,13 @@ export function UserList({
                                     </span>
                                     <button
                                         onClick={() => onEdit(user)}
-                                        className="material-symbols-rounded text-on-surface-variant hover:text-primary text-[20px] cursor-pointer"
+                                        className="material-symbols-outlined text-on-surface-variant hover:text-primary text-[20px] cursor-pointer"
                                     >
                                         edit
                                     </button>
                                     <button
                                         onClick={() => onToggleStatus(user.id)}
-                                        className={`material-symbols-rounded text-[20px] cursor-pointer ${user.isActive
+                                        className={`material-symbols-outlined text-[20px] cursor-pointer ${user.isActive
                                             ? 'text-error hover:text-error-hover'
                                             : 'text-success hover:text-success-hover'
                                             }`}

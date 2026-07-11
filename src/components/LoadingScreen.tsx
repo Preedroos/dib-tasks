@@ -24,16 +24,15 @@ export function LoadingScreen({ isFadingOut = false }: { isFadingOut?: boolean }
     });
 
     return (
-        <div 
-            className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-50 p-6 select-none transition-opacity duration-200 ease-out ${
-                isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
-            }`}
+        <div
+            className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-50 p-6 select-none transition-opacity duration-200 ease-out ${isFadingOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                }`}
         >
             <div className="flex items-center justify-center gap-5 h-16 w-72 mx-auto mb-6 pointer-events-none">
                 {PAW_ANIMATION_STEPS.map((step, index) => (
                     <div
                         key={index}
-                        className={`material-symbols-rounded animate-[pulse_1.2s_infinite_ease-in-out] transform ${step.transform}`}
+                        className={`material-symbols-outlined animate-[pulse_1.2s_infinite_ease-in-out] transform ${step.transform}`}
                         style={{ animationDelay: step.delay }}
                     >
                         pets
