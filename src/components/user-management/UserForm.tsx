@@ -1,5 +1,5 @@
 import type { RoleType } from '../../types';
-import type { MockStore } from '../../pages/UserManagement';
+import type { Store } from '../../pages/UserManagement';
 
 export interface UserFormState {
     id: string;
@@ -11,7 +11,7 @@ export interface UserFormState {
 
 interface UserFormProps {
     values: UserFormState;
-    activeStores: MockStore[];
+    activeStores: Store[];
     onChange: (field: keyof UserFormState, value: any) => void;
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     onCancel: () => void;

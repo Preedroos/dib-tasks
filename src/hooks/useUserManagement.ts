@@ -3,11 +3,11 @@ import { collection, getDocs, doc, setDoc, updateDoc, query, orderBy } from 'fir
 import { createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { db, secondaryAuth } from '../lib/firebase';
 import type { RoleType } from '../types';
-import type { MockUser, MockStore } from '../pages/UserManagement';
+import type { User, Store } from '../pages/UserManagement';
 
 export function useUserManagement() {
-    const [stores, setStores] = useState<MockStore[]>([]);
-    const [users, setUsers] = useState<MockUser[]>([]);
+    const [stores, setStores] = useState<Store[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
 
     const [userForm, setUserForm] = useState<{
         id: string;
@@ -148,10 +148,10 @@ export function useUserManagement() {
 
                 // 2. Cria o usuário no Firebase Auth usando a segunda instância
                 const authResult = await createUserWithEmailAndPassword(secondaryAuth, userForm.email, temporaryPassword);
-                
+
                 // 3. Envia e-mail de redefinição de senha para o usuário
                 await sendPasswordResetEmail(secondaryAuth, userForm.email);
-                
+
                 // 4. Salva os dados na coleção Firestore
                 const uid = authResult.user.uid;
                 const userRef = doc(db, 'users', uid);
@@ -193,7 +193,7 @@ export function useUserManagement() {
         }));
     };
 
-    const handleEditUser = (user: MockUser) => {
+    const handleEditUser = (user: User) => {
         setUserForm({
             id: user.id,
             name: user.name,
@@ -215,7 +215,7 @@ export function useUserManagement() {
         }));
     };
 
-    const handleEditStore = (store: MockStore) => {
+    const handleEditStore = (store: Store) => {
         setStoreForm({
             id: store.id,
             name: store.name,

@@ -1,10 +1,10 @@
-import type { MockUser, MockStore } from '../../pages/UserManagement';
+import type { User, Store } from '../../pages/UserManagement';
 
 interface UserListProps {
-    users: MockUser[]; // Virá filtrado do orquestrador
-    stores: MockStore[];
+    users: User[]; // Virá filtrado do orquestrador
+    stores: Store[];
     editingId: string | null | undefined;
-    onEdit: (user: MockUser) => void;
+    onEdit: (user: User) => void;
     onToggleStatus: (id: string) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;

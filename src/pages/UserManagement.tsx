@@ -11,14 +11,14 @@ import { UserList } from '../components/user-management/UserList';
 import { StoreList } from '../components/user-management/StoreList';
 import { useUserManagement } from '../hooks/useUserManagement';
 
-export interface MockStore {
+export interface Store {
     id: string;
     name: string;
     city: string;
     isActive: boolean;
 }
 
-export interface MockUser {
+export interface User {
     id: string;
     name: string;
     email: string;

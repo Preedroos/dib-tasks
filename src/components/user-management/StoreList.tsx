@@ -1,9 +1,9 @@
-import type { MockStore } from '../../pages/UserManagement';
+import type { Store } from '../../pages/UserManagement';
 
 interface StoreListProps {
-    stores: MockStore[]; // Virá filtrado do orquestrador
+    stores: Store[]; // Virá filtrado do orquestrador
     editingId: string | null | undefined;
-    onEdit: (store: MockStore) => void;
+    onEdit: (store: Store) => void;
     onToggleStatus: (id: string) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
@@ -52,8 +52,8 @@ export function StoreList({
                             <div
                                 key={store.id}
                                 className={`p-4 flex items-center justify-between transition-all duration-200 ${isEditing
-                                        ? 'border-2 border-primary bg-primary/5 rounded-xl m-2 shadow-xs'
-                                        : 'border-b border-outline-variant/30 hover:bg-surface-container-high/10 last:border-0'
+                                    ? 'border-2 border-primary bg-primary/5 rounded-xl m-2 shadow-xs'
+                                    : 'border-b border-outline-variant/30 hover:bg-surface-container-high/10 last:border-0'
                                     } ${!store.isActive && !isEditing ? 'opacity-50 bg-surface-container-low/40' : ''}`}
                             >
                                 <div>
@@ -77,8 +77,8 @@ export function StoreList({
                                     <button
                                         onClick={() => onToggleStatus(store.id)}
                                         className={`material-symbols-outlined text-[20px] cursor-pointer ${store.isActive
-                                                ? 'text-error hover:text-error-hover'
-                                                : 'text-success hover:text-success-hover'
+                                            ? 'text-error hover:text-error-hover'
+                                            : 'text-success hover:text-success-hover'
                                             }`}
                                     >
                                         {store.isActive ? 'toggle_on' : 'toggle_off'}
