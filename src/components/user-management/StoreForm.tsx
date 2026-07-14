@@ -17,7 +17,7 @@ export function StoreForm({ values, onChange, onSubmit, onCancel }: StoreFormPro
     return (
         <form onSubmit={onSubmit} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/40 space-y-4 shadow-xs">
             <h2 className="text-title-medium font-bold text-on-surface">
-                {isEditing ? 'Editar Loja' : 'Nova Loja'}
+                {isEditing ? 'Editar Unidade' : 'Nova Unidade'}
             </h2>
 
             <div className="flex flex-col gap-1">
@@ -26,7 +26,7 @@ export function StoreForm({ values, onChange, onSubmit, onCancel }: StoreFormPro
                     type="text"
                     value={values.name}
                     onChange={(e) => onChange('name', e.target.value)}
-                    placeholder="Ex: Unidade Moema"
+                    placeholder="Ex: Ceará"
                     className="px-3 py-2 rounded-xl bg-surface-container border border-outline/20 text-sm focus:outline-primary w-full"
                 />
             </div>
@@ -37,7 +37,7 @@ export function StoreForm({ values, onChange, onSubmit, onCancel }: StoreFormPro
                     type="text"
                     value={values.city}
                     onChange={(e) => onChange('city', e.target.value)}
-                    placeholder="Ex: São Paulo"
+                    placeholder="Ex: Campo Grande"
                     className="px-3 py-2 rounded-xl bg-surface-container border border-outline/20 text-sm focus:outline-primary w-full"
                 />
             </div>
@@ -47,7 +47,7 @@ export function StoreForm({ values, onChange, onSubmit, onCancel }: StoreFormPro
                     type="submit"
                     className="flex-1 py-2 bg-primary text-on-primary font-semibold text-sm rounded-xl hover:bg-primary-hover transition-all cursor-pointer"
                 >
-                    {isEditing ? 'Atualizar Loja' : 'Salvar Loja'}
+                    {isEditing ? 'Atualizar' : 'Cadastrar'}
                 </button>
                 {isEditing && (
                     <button

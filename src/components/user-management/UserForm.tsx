@@ -32,7 +32,7 @@ export function UserForm({ values, activeStores, onChange, onSubmit, onCancel }:
                     type="text"
                     value={values.name}
                     onChange={(e) => onChange('name', e.target.value)}
-                    placeholder="Ex: João Silva"
+                    placeholder="Ex: Jaqueline Jandre"
                     className="px-3 py-2 rounded-xl bg-surface-container border border-outline/20 text-sm focus:outline-primary w-full"
                 />
             </div>
@@ -43,7 +43,7 @@ export function UserForm({ values, activeStores, onChange, onSubmit, onCancel }:
                     type="email"
                     value={values.email}
                     onChange={(e) => onChange('email', e.target.value)}
-                    placeholder="nome@doginbox.com"
+                    placeholder="user@email.com.br"
                     className="px-3 py-2 rounded-xl bg-surface-container border border-outline/20 text-sm focus:outline-primary w-full"
                 />
             </div>
@@ -55,9 +55,8 @@ export function UserForm({ values, activeStores, onChange, onSubmit, onCancel }:
                     onChange={(e) => onChange('department', e.target.value as RoleType)}
                     className="px-3 py-2 rounded-xl bg-surface-container border border-outline/20 text-sm focus:outline-primary w-full"
                 >
-                    <option value="MANAGER">manager de Loja</option>
-                    <option value="MARKETING">Marketing (Franqueadora)</option>
-                    <option value="ADMIN">administrador</option>
+                    <option value="MANAGER">Gerente</option>
+                    <option value="MARKETING">Marketing</option>
                 </select>
             </div>
 
