@@ -1,0 +1,214 @@
+import { useState, useEffect } from 'react';
+import { calculatePriorityByDueDate } from '../helpers/priority';
+import { useAuth } from '../contexts/AuthContext';
+import type { PriorityType, Stores } from '../types';
+
+interface TaskCreateProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAddTask: (taskData: {
+    title: string;
+    description: string;
+    dueDate: string;
+    priority: PriorityType;
+    storeIds?: string[];
+  }) => void;
+  availableStores: Stores[]; // Consome de forma limpa do orquestrador
+}
+
+export function TaskCreate({ isOpen, onClose, onAddTask, availableStores }: TaskCreateProps) {
+  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState('');
+  const [isTitleManuallyEdited, setIsTitleManuallyEdited] = useState(false);
+  const [dueDate, setDueDate] = useState('');
+  const [priority, setPriority] = useState<PriorityType>('LOW');
+  const [selectedStoreIds, setSelectedStoreIds] = useState<string[]>([]);
+
+  const { profile } = useAuth();
+  const showStoreSelect = profile?.role === 'ADMIN' || profile?.role === 'MARKETING';
+
+  // Auto-população de Título Baseada na Descrição
+  useEffect(() => {
+    if (!isTitleManuallyEdited) {
+      const autoTitle = description
+        .replace(/\n/g, ' ')
+        .substring(0, 50);
+
+      setTitle(autoTitle);
+    }
+  }, [description, isTitleManuallyEdited]);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = e.target.value;
+    setDueDate(selectedDate);
+    
+    const autoPriority = calculatePriorityByDueDate(selectedDate);
+    setPriority(autoPriority);
+  };
+
+  const handleClose = () => {
+    setDescription('');
+    setTitle('');
+    setIsTitleManuallyEdited(false);
+    setDueDate('');
+    setPriority('LOW');
+    setSelectedStoreIds([]);
+    onClose();
+  };
+  
+  const handleSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+
+    if (!description.trim() || !title.trim()) {
+      alert("Por favor, preencha o título e a descrição da demanda.");
+      return;
+    }
+
+    onAddTask({
+      title: title.trim(),
+      description: description.trim(),
+      dueDate,
+      priority,
+      storeIds: showStoreSelect ? selectedStoreIds : undefined
+    });
+
+    // Limpa o estado local pós-envio
+    setDescription('');
+    setTitle('');
+    setIsTitleManuallyEdited(false);
+    setDueDate('');
+    setPriority('LOW');
+    setSelectedStoreIds([]);
+
+    onClose();
+  };
+
+  const priorityBadgeColors = {
+    HIGH: 'text-primary bg-primary-fixed font-bold',
+    MEDIUM: 'text-status-pending bg-amber-50 font-bold',
+    LOW: 'text-status-in-progress bg-blue-50 font-bold',
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center animate-[fadeIn_0.2s_ease-out]">
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
+
+      <div className="relative bg-white w-full md:max-w-md rounded-t-3xl md:rounded-2xl p-6 shadow-xl z-10 max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_cubic-bezier(0.4,0,0.2,1)] md:animate-none">
+        <div className="w-12 h-1 bg-surface-container rounded-full mx-auto mb-4 md:hidden" />
+
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Nova Demanda</h3>
+          <button onClick={handleClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container active:scale-90 transition-transform">
+            <span className="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Campo Descrição */}
+          <div className="space-y-1">
+            <label className="text-label-md text-on-surface-variant">O que precisa ser feito? *</label>
+            <textarea
+              required
+              rows={3}
+              placeholder="Descreva detalhadamente a demanda..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors resize-none"
+            />
+          </div>
+
+          {/* Campo Título */}
+          <div className="space-y-1">
+            <label className="text-label-md text-on-surface-variant">Título da Demanda *</label>
+            <input
+              type="text"
+              value={title}
+              maxLength={50}
+              required
+              placeholder="Título resumido"
+              onChange={(e) => {
+                setIsTitleManuallyEdited(true);
+                setTitle(e.target.value);
+              }}
+              className="w-full p-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors"
+            />
+            <p className="text-xs text-on-surface-variant mt-1 text-right">
+              {title.length}/50 caracteres
+            </p>
+          </div>
+
+          {/* Campo Prazo de Entrega */}
+          <div className="space-y-1">
+            <label className="text-label-md text-on-surface-variant">Prazo Limite</label>
+            <input
+              type="date"
+              value={dueDate}
+              onChange={handleDateChange}
+              className="w-full h-12 px-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors"
+            />
+          </div>
+
+          {/* Badge de prioridade */}
+          <div className="flex items-center justify-between p-3 bg-surface-container rounded-xl">
+            <span className="text-label-md text-on-surface-variant">Prioridade Estimada:</span>
+            <span className={`text-label-md px-3 py-1 rounded-full uppercase tracking-wider transition-colors ${priorityBadgeColors[priority]}`}>
+              {priority === 'HIGH' ? 'Alta' : priority === 'MEDIUM' ? 'Média' : 'Baixa'}
+            </span>
+          </div>
+
+          {/* Campo de Seleção de Lojas */}
+          {showStoreSelect && (
+            <div className="space-y-1">
+              <label className="text-label-md text-on-surface-variant font-semibold">
+                Lojas Vinculadas
+              </label>
+              <div className="border border-outline-variant/60 rounded-xl bg-surface-container-low max-h-36 overflow-y-auto p-3 space-y-2">
+                {availableStores.length === 0 ? (
+                  <p className="text-sm text-on-surface-variant">
+                    Nenhuma loja ativa cadastrada.
+                  </p>
+                ) : (
+                  availableStores.map((store) => {
+                    const isChecked = selectedStoreIds.includes(store.id);
+                    return (
+                      <label
+                        key={store.id}
+                        className="flex items-center gap-3 cursor-pointer select-none text-body-md text-on-surface hover:bg-surface-container p-1.5 rounded-lg transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            if (isChecked) {
+                              setSelectedStoreIds(
+                                selectedStoreIds.filter((id) => id !== store.id)
+                              );
+                            } else {
+                              setSelectedStoreIds([...selectedStoreIds, store.id]);
+                            }
+                          }}
+                          className="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer"
+                        />
+                        <span>{store.name}</span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-full h-12 bg-primary text-on-primary font-label-md rounded-xl shadow-md active:scale-[0.98] transition-all font-bold flex items-center justify-center gap-2 mt-4"
+          >
+            <span className="material-symbols-outlined text-xl">save</span>
+            Criar Tarefa
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

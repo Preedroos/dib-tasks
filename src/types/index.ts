@@ -4,13 +4,14 @@ export type RoleType = "ADMIN" | "MANAGER" | "MARKETING";
 export type AuditType = "CREATE" | "UPDATE" | "DELETE" | "MOVE" | "ARCHIVE";
 
 export interface Tasks {
-  id: string; // ID do Documento no Firestore
+  id: string;
+  title: string;
   description: string;
   priority: PriorityType;
   status: StatusType;
   due_date: string | null;
   note?: string | null;
-  created_by: string; // uid do Firebase Auth
+  created_by: string;
   created_at: string;
   archived_at: string | null;
   store_ids: string[];

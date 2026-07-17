@@ -5,11 +5,12 @@ import { auth } from '../lib/firebase';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { SegmentedPicker } from '../components/SegmentedPicker';
 import { FloatingActionButton } from '../components/FloatingActionButton';
-import { TaskModal } from '../components/TaskModal';
+import { TaskCreate } from '../components/TaskCreate';
 import { Header } from '../components/Header';
 import { ConfirmationModal } from '../components/ConfirmationModal';
 import { TaskDetailsModal } from '../components/TaskDetailsModal';
 import { useTasks } from '../hooks/useTasks';
+import { useStores } from '../hooks/useStores';
 import { useAuth } from '../contexts/AuthContext';
 import type { StatusType, Tasks } from '../types';
 
@@ -18,10 +19,11 @@ type FilterStatusType = StatusType | 'ARCHIVED';
 export function Dashboard() {
   const navigate = useNavigate();
   const [activeStatus, setActiveStatus] = useState<FilterStatusType>('PENDING');
-  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isTaskCreateOpen, setIsTaskCreateOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Tasks | null>(null);
   const { profile } = useAuth();
 
+  const { stores } = useStores();
   const {
     tasks,
     pendingAction,
@@ -107,10 +109,10 @@ export function Dashboard() {
               className="hidden md:block fixed inset-0 bg-black/10 md:backdrop-blur-sm z-40 animate-[fadeIn_0.2s_ease-out]"
             />
             <div className="
-            w-full flex 
-            md:fixed md:top-0 md:right-0 md:z-50 md:w-96 md:h-full
-            md:bg-surface-container-lowest md:p-6 md:shadow-2xl md:border-l md:border-outline-variant
-          ">
+              w-full flex 
+              md:fixed md:top-0 md:right-0 md:z-50 md:w-96 md:h-full
+              md:bg-surface-container-lowest md:p-6 md:shadow-2xl md:border-l md:border-outline-variant
+            ">
               <KanbanColumn
                 title="Arquivados"
                 tasks={archivedTasks}
@@ -124,13 +126,21 @@ export function Dashboard() {
         )}
       </main>
 
-      <FloatingActionButton icon="add" onClick={() => setIsTaskModalOpen(true)} />
-      <TaskModal isOpen={isTaskModalOpen} onClose={() => setIsTaskModalOpen(false)} onAddTask={handleAddTask} />
+      <FloatingActionButton icon="add" onClick={() => setIsTaskCreateOpen(true)} />
+
+      <TaskCreate
+        isOpen={isTaskCreateOpen}
+        onClose={() => setIsTaskCreateOpen(false)}
+        onAddTask={handleAddTask}
+        availableStores={stores}
+      />
+
       <TaskDetailsModal
         isOpen={selectedTask !== null}
         onClose={() => setSelectedTask(null)}
         task={currentSelectedTask}
         userRole={profile?.role}
+        availableStores={stores}
         onUpdateNote={handleUpdateNote}
         onUpdateDueDate={handleUpdateDueDate}
         onUpdateStores={handleUpdateStores}

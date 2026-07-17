@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, doc, setDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, setDoc, deleteDoc, updateDoc, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { calculatePriorityByDueDate } from '../helpers/priority';
@@ -51,6 +51,7 @@ export function useTasks() {
         const data = doc.data();
         return {
           id: doc.id,
+          title: data.title,
           description: data.description,
           priority: data.priority,
           status: data.status,
@@ -134,42 +135,27 @@ export function useTasks() {
   };
 
   // CORREÇÃO: Agora aceita um array opcional de storeIds vindo da tela do Admin/Marketing
-  const handleAddTask = async (taskData: { 
-    description: string; 
-    dueDate: string; 
-    priority: PriorityType; 
-    storeIds?: string[]; 
-  }) => {
-    if (!profile) return;
-    try {
-      const newId = crypto.randomUUID();
-      const taskRef = doc(db, 'tasks', newId);
-
-      // Definição inteligente do escopo de lojas
-      let finalStoreIds: string[] = [];
-      if (profile.role === 'MANAGER' && profile.store_id) {
-        finalStoreIds = [profile.store_id]; // Se for gerente, força a própria loja
-      } else if (taskData.storeIds) {
-        finalStoreIds = taskData.storeIds; // Se for Admin/Marketing, usa o que foi selecionado na tela
-      }
-
-      await setDoc(taskRef, {
-        description: taskData.description,
-        priority: taskData.priority,
-        due_date: taskData.dueDate ? new Date(taskData.dueDate).toISOString() : null,
-        status: 'PENDING' as StatusType,
-        created_by: profile.id,
-        store_ids: finalStoreIds,
-        created_at: new Date().toISOString(),
-        archived_at: null,
-        note: null
-      });
-
-      await saveLog(newId, 'CREATE', 'Tarefa criada');
-    } catch (err: any) {
-      alert('Erro ao adicionar tarefa: ' + err.message);
-    }
-  };
+  const handleAddTask = async (taskData: {
+  title: string;          // 💥 Certifique-se de que o tipo espera o title
+  description: string;
+  dueDate: string;
+  priority: PriorityType;
+  storeIds?: string[];
+}) => {
+  try {
+    await addDoc(collection(db, 'tasks'), {
+      title: taskData.title, // 💥 SALVA O TÍTULO NO FIRESTORE DE FATO!
+      description: taskData.description,
+      due_date: taskData.dueDate,
+      priority: taskData.priority,
+      store_ids: taskData.storeIds || [],
+      status: 'PENDING',
+      created_at: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Erro ao salvar tarefa no Firestore:", error);
+  }
+};
 
   const handleUpdateNote = async (taskId: string, note: string) => {
     try {

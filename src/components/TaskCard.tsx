@@ -74,7 +74,7 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
       </div>
 
       <p className="font-headline-md text-headline-md text-on-surface mb-1 relative z-10">
-        {task.description}
+        {task.title}
       </p>
 
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-surface-container relative z-10">

@@ -1,7 +1,7 @@
 import type { PriorityType } from '../types';
 
 export function calculatePriorityByDueDate(dueDateString: string | null): PriorityType {
-  if (!dueDateString) return 'MEDIUM';
+  if (!dueDateString) return 'LOW';
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
