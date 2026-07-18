@@ -1,4 +1,5 @@
 import type { Store, User } from '../../pages/UserManagement';
+import { SearchInput } from '../common/SearchInput';
 
 interface UserListProps {
   users: User[]; // Virá filtrado do orquestrador
@@ -26,18 +27,11 @@ export function UserList({
         <h2 className="text-sm font-bold text-on-surface">
           Colaboradores ({users.length})
         </h2>
-        <div className="relative w-full sm:max-w-xs">
-          <input
-            type="text"
-            placeholder="Buscar por nome ou e-mail..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-surface-container border border-outline/20 text-xs focus:outline-primary placeholder:text-on-surface-variant/60 text-on-surface"
-          />
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[16px] text-on-surface-variant/60">
-            search
-          </span>
-        </div>
+        <SearchInput
+          placeholder="Buscar por nome ou e-mail..."
+          value={searchQuery}
+          onChange={onSearchChange}
+        />
       </div>
 
       {/* Listagem de Colaboradores */}

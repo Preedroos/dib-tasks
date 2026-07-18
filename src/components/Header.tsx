@@ -1,15 +1,11 @@
-import { useAuth } from '../contexts/AuthContext';
-
 interface HeaderProps {
     actionIcon?: 'settings_account_box' | 'dashboard';
+    showActionButton?: boolean;
     onActionClick?: () => void;
     onLogout?: () => void;
 }
 
-export function Header({ actionIcon = 'settings_account_box', onActionClick, onLogout }: HeaderProps) {
-    const { profile } = useAuth();
-    const showActionButton = actionIcon === 'dashboard' || (actionIcon === 'settings_account_box' && profile?.role === 'ADMIN');
-
+export function Header({ actionIcon = 'settings_account_box', showActionButton = false, onActionClick, onLogout }: HeaderProps) {
     return (
         <header className="bg-primary shadow-sm flex justify-between items-center px-6 h-[64px] w-full sticky top-0 z-50">
             <div className="flex items-center gap-2">

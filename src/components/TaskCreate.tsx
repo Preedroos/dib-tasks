@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { calculatePriorityByDueDate, PRIORITY_CONFIG } from '../helpers/priority';
 import { useAuth } from '../contexts/AuthContext';
 import { StoreCheckboxList } from './StoreCheckboxList';
+import { BaseModal } from './common/BaseModal';
 import type { PriorityType, Stores } from '../types';
 
 interface TaskCreateProps {
@@ -86,98 +87,83 @@ export function TaskCreate({ isOpen, onClose, onAddTask, availableStores }: Task
 
 
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center animate-[fadeIn_0.2s_ease-out]">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleClose} />
-
-      <div className="relative bg-white w-full md:max-w-md rounded-t-3xl md:rounded-2xl p-6 shadow-xl z-10 max-h-[90vh] overflow-y-auto animate-[slideUp_0.3s_cubic-bezier(0.4,0,0.2,1)] md:animate-none">
-        <div className="w-12 h-1 bg-surface-container rounded-full mx-auto mb-4 md:hidden" />
-
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="font-headline-md text-headline-md font-bold text-on-surface">Nova Demanda</h3>
-          <button onClick={handleClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container active:scale-90 transition-transform">
-            <span className="material-symbols-outlined text-xl">close</span>
-          </button>
+    <BaseModal isOpen={isOpen} onClose={handleClose} title="Nova Demanda">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Campo Descrição */}
+        <div className="space-y-1">
+          <label className="text-label-md text-on-surface-variant">O que precisa ser feito? *</label>
+          <textarea
+            required
+            rows={3}
+            placeholder="Descreva detalhadamente a demanda..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full p-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors resize-none"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Campo Descrição */}
+        {/* Campo Título */}
+        <div className="space-y-1">
+          <label className="text-label-md text-on-surface-variant">Título da Demanda *</label>
+          <input
+            type="text"
+            value={title}
+            maxLength={50}
+            required
+            placeholder="Título resumido"
+            onChange={(e) => {
+              setIsTitleManuallyEdited(true);
+              setTitle(e.target.value);
+            }}
+            className="w-full p-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors"
+          />
+          <p className="text-xs text-on-surface-variant mt-1 text-right">
+            {title.length}/50 caracteres
+          </p>
+        </div>
+
+        {/* Campo Prazo de Entrega */}
+        <div className="space-y-1">
+          <label className="text-label-md text-on-surface-variant">Prazo Limite</label>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={handleDateChange}
+            className="w-full h-12 px-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors"
+          />
+        </div>
+
+        {/* Badge de prioridade */}
+        <div className="flex items-center justify-between p-3 bg-surface-container rounded-xl">
+          <span className="text-label-md text-on-surface-variant">Prioridade Estimada:</span>
+          <span className={`text-label-md px-3 py-1 rounded-full uppercase tracking-wider transition-colors ${PRIORITY_CONFIG[priority].badgeClass}`}>
+            {PRIORITY_CONFIG[priority].shortLabel}
+          </span>
+        </div>
+
+        {/* Campo de Seleção de Lojas */}
+        {showStoreSelect && (
           <div className="space-y-1">
-            <label className="text-label-md text-on-surface-variant">O que precisa ser feito? *</label>
-            <textarea
-              required
-              rows={3}
-              placeholder="Descreva detalhadamente a demanda..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors resize-none"
+            <label className="text-label-md text-on-surface-variant font-semibold">
+              Lojas Vinculadas
+            </label>
+            <StoreCheckboxList
+              availableStores={availableStores}
+              selectedStoreIds={selectedStoreIds}
+              onChange={setSelectedStoreIds}
             />
           </div>
+        )}
 
-          {/* Campo Título */}
-          <div className="space-y-1">
-            <label className="text-label-md text-on-surface-variant">Título da Demanda *</label>
-            <input
-              type="text"
-              value={title}
-              maxLength={50}
-              required
-              placeholder="Título resumido"
-              onChange={(e) => {
-                setIsTitleManuallyEdited(true);
-                setTitle(e.target.value);
-              }}
-              className="w-full p-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors"
-            />
-            <p className="text-xs text-on-surface-variant mt-1 text-right">
-              {title.length}/50 caracteres
-            </p>
-          </div>
-
-          {/* Campo Prazo de Entrega */}
-          <div className="space-y-1">
-            <label className="text-label-md text-on-surface-variant">Prazo Limite</label>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={handleDateChange}
-              className="w-full h-12 px-3 rounded-xl border border-outline-variant focus:outline-none focus:border-primary text-body-md bg-surface-container-low transition-colors"
-            />
-          </div>
-
-          {/* Badge de prioridade */}
-          <div className="flex items-center justify-between p-3 bg-surface-container rounded-xl">
-            <span className="text-label-md text-on-surface-variant">Prioridade Estimada:</span>
-            <span className={`text-label-md px-3 py-1 rounded-full uppercase tracking-wider transition-colors ${PRIORITY_CONFIG[priority].badgeClass}`}>
-              {PRIORITY_CONFIG[priority].shortLabel}
-            </span>
-          </div>
-
-          {/* Campo de Seleção de Lojas */}
-          {showStoreSelect && (
-            <div className="space-y-1">
-              <label className="text-label-md text-on-surface-variant font-semibold">
-                Lojas Vinculadas
-              </label>
-              <StoreCheckboxList
-                availableStores={availableStores}
-                selectedStoreIds={selectedStoreIds}
-                onChange={setSelectedStoreIds}
-              />
-            </div>
-          )}
-
-          <button
-            type="submit"
-            className="w-full h-12 bg-primary text-on-primary font-label-md rounded-xl shadow-md active:scale-[0.98] transition-all font-bold flex items-center justify-center gap-2 mt-4"
-          >
-            <span className="material-symbols-outlined text-xl">save</span>
-            Criar Tarefa
-          </button>
-        </form>
-      </div>
-    </div>
+        <button
+          type="submit"
+          className="w-full h-12 bg-primary text-on-primary font-label-md rounded-xl shadow-md active:scale-[0.98] transition-all font-bold flex items-center justify-center gap-2 mt-4"
+        >
+          <span className="material-symbols-outlined text-xl">save</span>
+          Criar Tarefa
+        </button>
+      </form>
+    </BaseModal>
   );
 }

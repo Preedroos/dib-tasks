@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { KanbanColumn } from '../components/KanbanColumn';
-import { SegmentedPicker } from '../components/SegmentedPicker';
+import { Header } from '../components/Header';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { TaskCreate } from '../components/TaskCreate';
-import { Header } from '../components/Header';
-import { ConfirmationModal } from '../components/ConfirmationModal';
 import { TaskDetailsModal } from '../components/TaskDetailsModal';
+import { ConfirmationModal } from '../components/ConfirmationModal';
 import { useTasks } from '../hooks/useTasks';
 import { useStores } from '../hooks/useStores';
 import { useAuth } from '../contexts/AuthContext';
+import { DashboardPresenter } from './DashboardPresenter';
 import type { StatusType, Tasks } from '../types';
 
 type FilterStatusType = StatusType | 'ARCHIVED';
@@ -43,118 +42,77 @@ export function Dashboard() {
 
   const currentSelectedTask = tasks.find((t) => t.id === selectedTask?.id) || null;
 
+  const header = (
+    <Header
+      actionIcon="settings_account_box"
+      showActionButton={profile?.role === 'ADMIN'}
+      onActionClick={() => {
+        navigate('/usermanagement');
+      }}
+      onLogout={logout}
+    />
+  );
+
+  const floatingActionButton = (
+    <FloatingActionButton icon="add" onClick={() => setIsTaskCreateOpen(true)} />
+  );
+
+  const createModal = (
+    <TaskCreate
+      isOpen={isTaskCreateOpen}
+      onClose={() => setIsTaskCreateOpen(false)}
+      onAddTask={handleAddTask}
+      availableStores={stores}
+    />
+  );
+
+  const detailsModal = (
+    <TaskDetailsModal
+      isOpen={selectedTask !== null}
+      onClose={() => setSelectedTask(null)}
+      task={currentSelectedTask}
+      userRole={profile?.role}
+      availableStores={stores}
+      onUpdateNote={handleUpdateNote}
+      onUpdateDueDate={handleUpdateDueDate}
+      onUpdateStores={handleUpdateStores}
+    />
+  );
+
+  const confirmationModal = (
+    <ConfirmationModal
+      isOpen={pendingAction !== null}
+      onClose={cancelPendingAction}
+      onConfirm={confirmPendingAction}
+      title={pendingAction?.type === 'delete' ? 'Excluir Tarefa' : 'Iniciar Produção'}
+      description={
+        pendingAction?.type === 'delete'
+          ? 'Tem certeza que deseja excluir esta tarefa? Esta ação é irreversível.'
+          : 'Deseja iniciar a produção desta demanda? Esta ação não pode ser desfeita.'
+      }
+      confirmText={pendingAction?.type === 'delete' ? 'Excluir' : 'Confirmar'}
+      variant={pendingAction?.type === 'delete' ? 'danger' : 'info'}
+    />
+  );
+
   return (
-    <div className="bg-surface-container-low min-h-screen pb-32 relative overflow-x-hidden">
-
-      <Header
-        actionIcon="settings_account_box"
-        onActionClick={() => {
-          navigate('/usermanagement');
-        }}
-        onLogout={logout}
-      />
-
-      <main className="px-4 max-w-7xl mx-auto mt-6">
-
-        <SegmentedPicker activeStatus={activeStatus} setActiveStatus={setActiveStatus} />
-
-        <div className="hidden md:flex justify-end items-center mb-6">
-          <button
-            onClick={() => setActiveStatus('ARCHIVED')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface border border-outline-variant/40 cursor-pointer transition-all active:scale-95"
-          >
-            <span className="material-symbols-outlined text-[18px]">archive</span>
-            <span className="text-sm font-semibold">Exibir Arquivados</span>
-          </button>
-        </div>
-
-        <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 w-full ${activeStatus === 'ARCHIVED' ? 'hidden md:grid' : 'grid'}`}>
-          <KanbanColumn
-            title="Pendentes"
-            tasks={pendingTasks}
-            isActiveInMobile={activeStatus === 'PENDING'}
-            onMoveTask={handleMoveTask}
-            onDeleteTask={handleDeleteTask}
-            onArchiveTask={handleArchiveTask}
-            onCardClick={setSelectedTask}
-          />
-          <KanbanColumn
-            title="Em Andamento"
-            tasks={inProgressTasks}
-            isActiveInMobile={activeStatus === 'IN_PROGRESS'}
-            onMoveTask={handleMoveTask}
-            onDeleteTask={handleDeleteTask}
-            onArchiveTask={handleArchiveTask}
-            onCardClick={setSelectedTask}
-          />
-          <KanbanColumn
-            title="Concluídas"
-            tasks={doneTasks}
-            isActiveInMobile={activeStatus === 'DONE'}
-            onMoveTask={handleMoveTask}
-            onDeleteTask={handleDeleteTask}
-            onArchiveTask={handleArchiveTask}
-            onCardClick={setSelectedTask}
-          />
-        </div>
-
-        {activeStatus === 'ARCHIVED' && (
-          <>
-            <div
-              onClick={() => setActiveStatus('PENDING')}
-              className="hidden md:block fixed inset-0 bg-black/10 md:backdrop-blur-sm z-40 animate-[fadeIn_0.2s_ease-out]"
-            />
-            <div className="
-              w-full flex 
-              md:fixed md:top-0 md:right-0 md:z-50 md:w-96 md:h-full
-              md:bg-surface-container-lowest md:p-6 md:shadow-2xl md:border-l md:border-outline-variant
-            ">
-              <KanbanColumn
-                title="Arquivados"
-                tasks={archivedTasks}
-                isActiveInMobile={true}
-                onArchiveTask={handleUnarchiveTask}
-                onCloseDrawer={() => setActiveStatus('PENDING')}
-                onCardClick={setSelectedTask}
-              />
-            </div>
-          </>
-        )}
-      </main>
-
-      <FloatingActionButton icon="add" onClick={() => setIsTaskCreateOpen(true)} />
-
-      <TaskCreate
-        isOpen={isTaskCreateOpen}
-        onClose={() => setIsTaskCreateOpen(false)}
-        onAddTask={handleAddTask}
-        availableStores={stores}
-      />
-
-      <TaskDetailsModal
-        isOpen={selectedTask !== null}
-        onClose={() => setSelectedTask(null)}
-        task={currentSelectedTask}
-        userRole={profile?.role}
-        availableStores={stores}
-        onUpdateNote={handleUpdateNote}
-        onUpdateDueDate={handleUpdateDueDate}
-        onUpdateStores={handleUpdateStores}
-      />
-
-      <ConfirmationModal
-        isOpen={pendingAction !== null}
-        onClose={cancelPendingAction}
-        onConfirm={confirmPendingAction}
-        title={pendingAction?.type === 'delete' ? 'Excluir Tarefa' : 'Iniciar Produção'}
-        description={
-          pendingAction?.type === 'delete'
-            ? 'Tem certeza que deseja excluir esta tarefa? Esta ação é irreversível.'
-            : 'Deseja iniciar a produção desta demanda? Esta ação não pode ser desfeita.'
-        }
-        confirmText={pendingAction?.type === 'delete' ? 'Excluir' : 'Confirmar'}
-        variant={pendingAction?.type === 'delete' ? 'danger' : 'info'}
-      />
-    </div>
+    <DashboardPresenter
+      header={header}
+      activeStatus={activeStatus}
+      setActiveStatus={setActiveStatus}
+      pendingTasks={pendingTasks}
+      inProgressTasks={inProgressTasks}
+      doneTasks={doneTasks}
+      archivedTasks={archivedTasks}
+      handleMoveTask={handleMoveTask}
+      handleDeleteTask={handleDeleteTask}
+      handleArchiveTask={handleArchiveTask}
+      handleUnarchiveTask={handleUnarchiveTask}
+      setSelectedTask={setSelectedTask}
+      floatingActionButton={floatingActionButton}
+      createModal={createModal}
+      detailsModal={detailsModal}
+      confirmationModal={confirmationModal}
+    />
   );
 }

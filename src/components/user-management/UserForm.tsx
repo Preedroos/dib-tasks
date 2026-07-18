@@ -1,5 +1,6 @@
 import type { RoleType } from '../../types';
 import type { Store } from '../../pages/UserManagement';
+import { FormCard } from '../common/FormCard';
 
 export interface UserFormState {
     id: string;
@@ -20,12 +21,32 @@ interface UserFormProps {
 export function UserForm({ values, activeStores, onChange, onSubmit, onCancel }: UserFormProps) {
     const isEditing = !!values.id;
 
-    return (
-        <form onSubmit={onSubmit} className="bg-surface-container-lowest p-5 rounded-2xl border border-outline-variant/40 space-y-4 shadow-xs">
-            <h2 className="text-title-medium font-bold text-on-surface">
-                {isEditing ? 'Editar Colaborador' : 'Novo Colaborador'}
-            </h2>
+    const actions = (
+        <>
+            <button
+                type="submit"
+                className="flex-1 py-2 bg-primary text-on-primary font-semibold text-sm rounded-xl hover:bg-primary-hover transition-all cursor-pointer"
+            >
+                {isEditing ? 'Atualizar' : 'Cadastrar'}
+            </button>
+            {isEditing && (
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    className="px-3 py-2 border border-outline text-on-surface font-semibold text-sm rounded-xl hover:bg-surface-container transition-all cursor-pointer"
+                >
+                    Cancelar
+                </button>
+            )}
+        </>
+    );
 
+    return (
+        <FormCard
+            title={isEditing ? 'Editar Colaborador' : 'Novo Colaborador'}
+            onSubmit={onSubmit}
+            actions={actions}
+        >
             <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-on-surface-variant">Nome Completo</label>
                 <input
@@ -75,24 +96,6 @@ export function UserForm({ values, activeStores, onChange, onSubmit, onCancel }:
                     </select>
                 </div>
             )}
-
-            <div className="flex gap-2 pt-2">
-                <button
-                    type="submit"
-                    className="flex-1 py-2 bg-primary text-on-primary font-semibold text-sm rounded-xl hover:bg-primary-hover transition-all cursor-pointer"
-                >
-                    {isEditing ? 'Atualizar' : 'Cadastrar'}
-                </button>
-                {isEditing && (
-                    <button
-                        type="button"
-                        onClick={onCancel}
-                        className="px-3 py-2 border border-outline text-on-surface font-semibold text-sm rounded-xl hover:bg-surface-container transition-all cursor-pointer"
-                    >
-                        Cancelar
-                    </button>
-                )}
-            </div>
-        </form>
+        </FormCard>
     );
 }
