@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { calculatePriorityByDueDate } from '../helpers/priority';
+import { calculatePriorityByDueDate, PRIORITY_CONFIG } from '../helpers/priority';
+import { formatLongDate } from '../helpers/date';
+import { StoreCheckboxList } from './StoreCheckboxList';
 import type { Tasks, RoleType, Stores, PriorityType } from '../types';
 
 interface TaskDetailsModalProps {
@@ -77,17 +79,7 @@ export function TaskDetailsModal({
     }
   };
 
-  const priorityBadgeColors = {
-    HIGH: 'text-primary bg-primary-fixed font-bold',
-    MEDIUM: 'text-status-pending bg-amber-50 font-bold',
-    LOW: 'text-status-in-progress bg-blue-50 font-bold',
-  };
 
-  const formatDateString = (isoString: string | null) => {
-    if (!isoString) return 'Sem prazo';
-    const date = new Date(isoString);
-    return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center animate-[fadeIn_0.2s_ease-out]">
@@ -127,8 +119,8 @@ export function TaskDetailsModal({
           {/* Prioridade */}
           <div className="flex items-center justify-between p-3 bg-surface-container rounded-xl">
             <span className="text-label-md text-on-surface-variant">Prioridade Estimada:</span>
-            <span className={`text-label-md px-3 py-1 rounded-full uppercase tracking-wider transition-colors ${priorityBadgeColors[previewPriority]}`}>
-              {previewPriority === 'HIGH' ? 'Alta' : previewPriority === 'MEDIUM' ? 'Média' : 'Baixa'}
+            <span className={`text-label-md px-3 py-1 rounded-full uppercase tracking-wider transition-colors ${PRIORITY_CONFIG[previewPriority].badgeClass}`}>
+              {PRIORITY_CONFIG[previewPriority].shortLabel}
             </span>
           </div>
 
@@ -144,7 +136,7 @@ export function TaskDetailsModal({
               />
             ) : (
               <div className="w-full h-12 flex items-center px-4 rounded-xl border border-outline-variant/60 bg-surface-container-low text-body-md text-on-surface">
-                {formatDateString(task.due_date)}
+                {formatLongDate(task.due_date)}
               </div>
             )}
           </div>
@@ -155,39 +147,11 @@ export function TaskDetailsModal({
               <label className="text-label-md text-on-surface-variant font-semibold">
                 Lojas Vinculadas
               </label>
-              <div className="border border-outline-variant/60 rounded-xl bg-surface-container-low max-h-36 overflow-y-auto p-3 space-y-2">
-                {availableStores.length === 0 ? (
-                  <p className="text-sm text-on-surface-variant">
-                    Nenhuma loja ativa cadastrada.
-                  </p>
-                ) : (
-                  availableStores.map((store) => {
-                    const isChecked = selectedStoreIds.includes(store.id);
-                    return (
-                      <label
-                        key={store.id}
-                        className="flex items-center gap-3 cursor-pointer select-none text-body-md text-on-surface hover:bg-surface-container p-1.5 rounded-lg transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => {
-                            if (isChecked) {
-                              setSelectedStoreIds(
-                                selectedStoreIds.filter((id) => id !== store.id)
-                              );
-                            } else {
-                              setSelectedStoreIds([...selectedStoreIds, store.id]);
-                            }
-                          }}
-                          className="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer"
-                        />
-                        <span>{store.name}</span>
-                      </label>
-                    );
-                  })
-                )}
-              </div>
+              <StoreCheckboxList
+                availableStores={availableStores}
+                selectedStoreIds={selectedStoreIds}
+                onChange={setSelectedStoreIds}
+              />
             </div>
           )}
 

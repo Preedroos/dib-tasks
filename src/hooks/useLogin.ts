@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { authService } from '../services/authService';
 
 export function useLogin() {
     const [email, setEmail] = useState('');
@@ -19,7 +18,7 @@ export function useLogin() {
 
         try {
             setIsLoading(true);
-            await signInWithEmailAndPassword(auth, email, password);
+            await authService.signIn(email, password);
         } catch (error: any) {
             setErrorMessage(error.message || 'Erro ao realizar login. Tente novamente.');
         } finally {

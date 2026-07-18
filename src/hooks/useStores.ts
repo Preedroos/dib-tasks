@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy } from 'firebase/firestore';
+import { storeService } from '../services/storeService';
 import type { Stores } from '../types';
 
 export function useStores() {
@@ -11,23 +10,18 @@ export function useStores() {
     const fetchStores = async () => {
       setLoading(true);
       try {
-        const q = query(collection(db, 'stores'), orderBy('name'));
-        const querySnapshot = await getDocs(q);
-        const fetchedStores: Stores[] = [];
+        const allStores = await storeService.getStores();
+        // Filtra apenas as lojas ativas
+        const activeStores: Stores[] = allStores
+          .filter(store => store.isActive)
+          .map(store => ({
+            id: store.id,
+            name: store.name,
+            city: store.city,
+            created_at: store.created_at || new Date().toISOString()
+          }));
         
-        querySnapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          if (data.deleted_at === null || data.deleted_at === undefined) {
-            fetchedStores.push({
-              id: docSnap.id,
-              name: data.name,
-              city: data.city,
-              created_at: data.created_at
-            });
-          }
-        });
-        
-        setStores(fetchedStores);
+        setStores(activeStores);
       } catch (error) {
         console.error("Erro ao buscar lojas no hook useStores:", error);
       } finally {

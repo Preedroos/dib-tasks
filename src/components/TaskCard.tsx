@@ -1,3 +1,5 @@
+import { PRIORITY_CONFIG } from '../helpers/priority';
+import { formatShortDate } from '../helpers/date';
 import type { StatusType, Tasks } from '../types';
 
 interface TaskCardProps {
@@ -9,23 +11,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCardProps) {
-  const priorityColors = {
-    HIGH: 'bg-primary text-on-primary',
-    MEDIUM: 'bg-status-pending text-white',
-    LOW: 'bg-status-in-progress text-white',
-  };
-
-  const priorityLabels = {
-    HIGH: 'Alta Prioridade',
-    MEDIUM: 'Média',
-    LOW: 'Baixa',
-  };
-
-  const formatDueDate = (dateString: string | null) => {
-    if (!dateString) return 'Sem prazo';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
-  };
+  const priorityInfo = PRIORITY_CONFIG[task.priority];
 
   return (
     <div
@@ -36,14 +22,14 @@ export function TaskCard({ task, onMove, onDelete, onArchive, onClick }: TaskCar
 
       <div className="flex justify-between items-start mb-3 relative z-10">
 
-        <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${priorityColors[task.priority]}`}>
-          {priorityLabels[task.priority]}
+        <span className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider ${priorityInfo.cardClass}`}>
+          {priorityInfo.label}
         </span>
 
         {task.due_date && (
           <span className="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1">
             <span className="material-symbols-outlined text-[14px]">schedule</span>
-            {formatDueDate(task.due_date)}
+            {formatShortDate(task.due_date)}
           </span>
         )}
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { collection, getDocs, doc, setDoc, updateDoc, query, orderBy } from 'firebase/firestore';
-import { createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { db, secondaryAuth } from '../lib/firebase';
+import { storeService } from '../services/storeService';
+import { userService } from '../services/userService';
+import { authService } from '../services/authService';
 import type { RoleType } from '../types';
 import type { User, Store } from '../pages/UserManagement';
 
@@ -33,17 +33,8 @@ export function useUserManagement() {
     // --- CARREGAMENTO INICIAL ---
     const fetchStores = async () => {
         try {
-            const q = query(collection(db, 'stores'), orderBy('name'));
-            const querySnapshot = await getDocs(q);
-            setStores(querySnapshot.docs.map(doc => {
-                const s = doc.data();
-                return {
-                    id: doc.id,
-                    name: s.name,
-                    city: s.city,
-                    isActive: s.deleted_at === null || s.deleted_at === undefined
-                };
-            }));
+            const fetched = await storeService.getStores();
+            setStores(fetched);
         } catch (err: any) {
             console.error('Erro ao buscar lojas:', err.message);
         }
@@ -51,19 +42,15 @@ export function useUserManagement() {
 
     const fetchUsers = async () => {
         try {
-            const q = query(collection(db, 'users'), orderBy('name'));
-            const querySnapshot = await getDocs(q);
-            setUsers(querySnapshot.docs.map(doc => {
-                const u = doc.data();
-                return {
-                    id: doc.id,
-                    name: u.name,
-                    email: u.email,
-                    department: u.role as RoleType,
-                    store_id: u.store_id || null,
-                    isActive: u.deleted_at === null || u.deleted_at === undefined
-                };
-            }));
+            const fetched = await userService.getUsers();
+            setUsers(fetched.map(u => ({
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                department: u.role,
+                store_id: u.store_id,
+                isActive: u.isActive
+            })));
         } catch (err: any) {
             console.error('Erro ao buscar colaboradores:', err.message);
         }
@@ -81,22 +68,9 @@ export function useUserManagement() {
 
         try {
             if (isEditingStore) {
-                const storeRef = doc(db, 'stores', storeForm.id);
-                await updateDoc(storeRef, {
-                    name: storeForm.name,
-                    city: storeForm.city,
-                    updated_at: new Date().toISOString()
-                });
+                await storeService.updateStore(storeForm.id, storeForm.name, storeForm.city);
             } else {
-                const newId = `loja-${crypto.randomUUID().slice(0, 8)}`;
-                const storeRef = doc(db, 'stores', newId);
-                await setDoc(storeRef, {
-                    name: storeForm.name,
-                    city: storeForm.city,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                    deleted_at: null
-                });
+                await storeService.createStore(storeForm.name, storeForm.city);
             }
             setStoreForm({ id: '', name: '', city: '' });
             await fetchStores();
@@ -109,11 +83,7 @@ export function useUserManagement() {
         const store = stores.find(s => s.id === id);
         if (!store) return;
         try {
-            const storeRef = doc(db, 'stores', id);
-            await updateDoc(storeRef, {
-                deleted_at: store.isActive ? new Date().toISOString() : null,
-                updated_at: new Date().toISOString()
-            });
+            await storeService.toggleStoreStatus(id, store.isActive);
             await fetchStores();
         } catch (err: any) {
             alert('Erro ao alternar status da loja: ' + err.message);
@@ -133,8 +103,7 @@ export function useUserManagement() {
 
         try {
             if (isEditingUser) {
-                const userRef = doc(db, 'users', userForm.id);
-                await updateDoc(userRef, {
+                await userService.updateUserProfile(userForm.id, {
                     name: userForm.name,
                     email: userForm.email,
                     role: userForm.department,
@@ -146,21 +115,18 @@ export function useUserManagement() {
                     .map(b => b.toString(16).padStart(2, '0'))
                     .join('');
 
-                // 2. Cria o usuário no Firebase Auth usando a segunda instância
-                const authResult = await createUserWithEmailAndPassword(secondaryAuth, userForm.email, temporaryPassword);
+                // 2. Cria o usuário no Firebase Auth usando o serviço (que usa secondaryAuth internamente)
+                const { uid } = await authService.createUser(userForm.email, temporaryPassword);
 
                 // 3. Envia e-mail de redefinição de senha para o usuário
-                await sendPasswordResetEmail(secondaryAuth, userForm.email);
+                await authService.sendPasswordReset(userForm.email);
 
                 // 4. Salva os dados na coleção Firestore
-                const uid = authResult.user.uid;
-                const userRef = doc(db, 'users', uid);
-                await setDoc(userRef, {
+                await userService.createUserProfile(uid, {
                     name: userForm.name,
                     email: userForm.email,
                     role: userForm.department,
-                    store_id: userForm.department === 'MANAGER' ? userForm.store_id : null,
-                    created_at: new Date().toISOString()
+                    store_id: userForm.department === 'MANAGER' ? userForm.store_id : null
                 });
             }
             setUserForm({ id: '', name: '', email: '', department: 'MANAGER', store_id: '' });
@@ -174,11 +140,7 @@ export function useUserManagement() {
         const user = users.find(u => u.id === id);
         if (!user) return;
         try {
-            const userRef = doc(db, 'users', id);
-            await updateDoc(userRef, {
-                deleted_at: user.isActive ? new Date().toISOString() : null,
-                updated_at: new Date().toISOString()
-            });
+            await userService.toggleUserStatus(id, user.isActive);
             await fetchUsers();
         } catch (err: any) {
             alert('Erro ao alternar status do colaborador: ' + err.message);

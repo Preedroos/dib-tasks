@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../lib/firebase';
 import type { RoleType } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { Header } from '../components/Header';
@@ -29,7 +27,7 @@ export interface User {
 
 export function UserManagement() {
   const navigate = useNavigate();
-  const { profile, loading } = useAuth();
+  const { profile, loading, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'USERS' | 'STORES'>('USERS');
 
   useEffect(() => {
@@ -71,9 +69,7 @@ export function UserManagement() {
         onActionClick={() => {
           navigate('/dashboard');
         }}
-        onLogout={async () => {
-          await signOut(auth);
-        }}
+        onLogout={logout}
       />
       <main className="max-w-6xl mx-auto space-y-6 p-6">
 

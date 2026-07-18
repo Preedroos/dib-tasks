@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../lib/firebase';
 import { KanbanColumn } from '../components/KanbanColumn';
 import { SegmentedPicker } from '../components/SegmentedPicker';
 import { FloatingActionButton } from '../components/FloatingActionButton';
@@ -21,7 +19,7 @@ export function Dashboard() {
   const [activeStatus, setActiveStatus] = useState<FilterStatusType>('PENDING');
   const [isTaskCreateOpen, setIsTaskCreateOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Tasks | null>(null);
-  const { profile } = useAuth();
+  const { profile, logout } = useAuth();
 
   const { stores } = useStores();
   const {
@@ -53,9 +51,7 @@ export function Dashboard() {
         onActionClick={() => {
           navigate('/usermanagement');
         }}
-        onLogout={async () => {
-          await signOut(auth);
-        }}
+        onLogout={logout}
       />
 
       <main className="px-4 max-w-7xl mx-auto mt-6">

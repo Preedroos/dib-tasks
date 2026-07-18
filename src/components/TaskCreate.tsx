@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { calculatePriorityByDueDate } from '../helpers/priority';
+import { calculatePriorityByDueDate, PRIORITY_CONFIG } from '../helpers/priority';
 import { useAuth } from '../contexts/AuthContext';
+import { StoreCheckboxList } from './StoreCheckboxList';
 import type { PriorityType, Stores } from '../types';
 
 interface TaskCreateProps {
@@ -83,11 +84,7 @@ export function TaskCreate({ isOpen, onClose, onAddTask, availableStores }: Task
     onClose();
   };
 
-  const priorityBadgeColors = {
-    HIGH: 'text-primary bg-primary-fixed font-bold',
-    MEDIUM: 'text-status-pending bg-amber-50 font-bold',
-    LOW: 'text-status-in-progress bg-blue-50 font-bold',
-  };
+
 
   if (!isOpen) return null;
 
@@ -153,8 +150,8 @@ export function TaskCreate({ isOpen, onClose, onAddTask, availableStores }: Task
           {/* Badge de prioridade */}
           <div className="flex items-center justify-between p-3 bg-surface-container rounded-xl">
             <span className="text-label-md text-on-surface-variant">Prioridade Estimada:</span>
-            <span className={`text-label-md px-3 py-1 rounded-full uppercase tracking-wider transition-colors ${priorityBadgeColors[priority]}`}>
-              {priority === 'HIGH' ? 'Alta' : priority === 'MEDIUM' ? 'Média' : 'Baixa'}
+            <span className={`text-label-md px-3 py-1 rounded-full uppercase tracking-wider transition-colors ${PRIORITY_CONFIG[priority].badgeClass}`}>
+              {PRIORITY_CONFIG[priority].shortLabel}
             </span>
           </div>
 
@@ -164,39 +161,11 @@ export function TaskCreate({ isOpen, onClose, onAddTask, availableStores }: Task
               <label className="text-label-md text-on-surface-variant font-semibold">
                 Lojas Vinculadas
               </label>
-              <div className="border border-outline-variant/60 rounded-xl bg-surface-container-low max-h-36 overflow-y-auto p-3 space-y-2">
-                {availableStores.length === 0 ? (
-                  <p className="text-sm text-on-surface-variant">
-                    Nenhuma loja ativa cadastrada.
-                  </p>
-                ) : (
-                  availableStores.map((store) => {
-                    const isChecked = selectedStoreIds.includes(store.id);
-                    return (
-                      <label
-                        key={store.id}
-                        className="flex items-center gap-3 cursor-pointer select-none text-body-md text-on-surface hover:bg-surface-container p-1.5 rounded-lg transition-colors"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => {
-                            if (isChecked) {
-                              setSelectedStoreIds(
-                                selectedStoreIds.filter((id) => id !== store.id)
-                              );
-                            } else {
-                              setSelectedStoreIds([...selectedStoreIds, store.id]);
-                            }
-                          }}
-                          className="rounded border-outline-variant text-primary focus:ring-primary w-4 h-4 cursor-pointer"
-                        />
-                        <span>{store.name}</span>
-                      </label>
-                    );
-                  })
-                )}
-              </div>
+              <StoreCheckboxList
+                availableStores={availableStores}
+                selectedStoreIds={selectedStoreIds}
+                onChange={setSelectedStoreIds}
+              />
             </div>
           )}
 

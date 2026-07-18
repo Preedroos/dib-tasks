@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { collection, query, where, onSnapshot, doc, setDoc, deleteDoc, updateDoc, addDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { taskService } from '../services/taskService';
 import { calculatePriorityByDueDate } from '../helpers/priority';
 import type { StatusType, PriorityType, Tasks, AuditType } from '../types';
 
@@ -19,16 +18,7 @@ export function useTasks() {
   const saveLog = async (taskId: string, action: AuditType, details: string) => {
     if (!profile) return;
     try {
-      const logId = crypto.randomUUID();
-      const logRef = doc(db, 'task_logs', logId);
-      await setDoc(logRef, {
-        id: logId,
-        user_id: profile.id,
-        task_id: taskId,
-        action,
-        details,
-        created_at: new Date().toISOString()
-      });
+      await taskService.saveLog(taskId, profile.id, action, details);
     } catch (err: any) {
       console.error('Erro ao salvar log de auditoria:', err.message);
     }
@@ -40,47 +30,23 @@ export function useTasks() {
       return;
     }
 
-    let q = query(collection(db, 'tasks'));
-
-    if (profile.role === 'MANAGER' && profile.store_id) {
-      q = query(q, where('store_ids', 'array-contains', profile.store_id));
-    }
-
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const dataList = querySnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          title: data.title,
-          description: data.description,
-          priority: data.priority,
-          status: data.status,
-          due_date: data.due_date || null,
-          note: data.note || null,
-          created_by: data.created_by,
-          created_at: data.created_at,
-          archived_at: data.archived_at || null,
-          store_ids: data.store_ids || []
-        } as Tasks;
-      });
-
-      // Ordenar em memória por created_at descending
-      dataList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-      setTasks(dataList);
-    }, (err: any) => {
-      console.error('Erro ao buscar tarefas em tempo real:', err.message);
-    });
+    const unsubscribe = taskService.subscribeTasks(
+      profile,
+      (dataList) => {
+        dataList.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setTasks(dataList);
+      },
+      (err) => {
+        console.error('Erro ao buscar tarefas em tempo real:', err.message);
+      }
+    );
 
     return () => unsubscribe();
   }, [profile]);
 
   const executeMoveTask = async (taskId: string, newStatus: StatusType) => {
     try {
-      const taskRef = doc(db, 'tasks', taskId);
-      await updateDoc(taskRef, {
-        status: newStatus
-      });
+      await taskService.updateTaskStatus(taskId, newStatus);
       await saveLog(taskId, 'MOVE', `Status alterado para ${newStatus}`);
     } catch (err: any) {
       alert('Erro ao mover tarefa: ' + err.message);
@@ -98,8 +64,7 @@ export function useTasks() {
 
   const executeDeleteTask = async (taskId: string) => {
     try {
-      const taskRef = doc(db, 'tasks', taskId);
-      await deleteDoc(taskRef);
+      await taskService.deleteTask(taskId);
       await saveLog(taskId, 'DELETE', 'Tarefa excluída');
     } catch (err: any) {
       alert('Erro ao excluir tarefa: ' + err.message);
@@ -112,10 +77,7 @@ export function useTasks() {
 
   const handleArchiveTask = async (taskId: string) => {
     try {
-      const taskRef = doc(db, 'tasks', taskId);
-      await updateDoc(taskRef, {
-        archived_at: new Date().toISOString()
-      });
+      await taskService.archiveTask(taskId, true);
       await saveLog(taskId, 'ARCHIVE', 'Tarefa arquivada');
     } catch (err: any) {
       alert('Erro ao arquivar tarefa: ' + err.message);
@@ -124,43 +86,30 @@ export function useTasks() {
 
   const handleUnarchiveTask = async (taskId: string) => {
     try {
-      const taskRef = doc(db, 'tasks', taskId);
-      await updateDoc(taskRef, {
-        archived_at: null
-      });
+      await taskService.archiveTask(taskId, false);
       await saveLog(taskId, 'UPDATE', 'Tarefa desarquivada');
     } catch (err: any) {
       alert('Erro ao desarquivar tarefa: ' + err.message);
     }
   };
 
-  // CORREÇÃO: Agora aceita um array opcional de storeIds vindo da tela do Admin/Marketing
   const handleAddTask = async (taskData: {
-  title: string;          // 💥 Certifique-se de que o tipo espera o title
-  description: string;
-  dueDate: string;
-  priority: PriorityType;
-  storeIds?: string[];
-}) => {
-  try {
-    await addDoc(collection(db, 'tasks'), {
-      title: taskData.title, // 💥 SALVA O TÍTULO NO FIRESTORE DE FATO!
-      description: taskData.description,
-      due_date: taskData.dueDate,
-      priority: taskData.priority,
-      store_ids: taskData.storeIds || [],
-      status: 'PENDING',
-      created_at: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error("Erro ao salvar tarefa no Firestore:", error);
-  }
-};
+    title: string;
+    description: string;
+    dueDate: string;
+    priority: PriorityType;
+    storeIds?: string[];
+  }) => {
+    try {
+      await taskService.addTask(taskData);
+    } catch (error) {
+      console.error("Erro ao salvar tarefa:", error);
+    }
+  };
 
   const handleUpdateNote = async (taskId: string, note: string) => {
     try {
-      const taskRef = doc(db, 'tasks', taskId);
-      await updateDoc(taskRef, { note });
+      await taskService.updateTaskNote(taskId, note);
       await saveLog(taskId, 'UPDATE', 'Nota administrativa atualizada');
     } catch (err: any) {
       alert('Erro ao atualizar nota: ' + err.message);
@@ -169,12 +118,8 @@ export function useTasks() {
 
   const handleUpdateDueDate = async (taskId: string, newDate: string) => {
     try {
-      const taskRef = doc(db, 'tasks', taskId);
       const calculatedPriority = calculatePriorityByDueDate(newDate);
-      await updateDoc(taskRef, {
-        due_date: newDate ? new Date(newDate).toISOString() : null,
-        priority: calculatedPriority
-      });
+      await taskService.updateTaskDueDate(taskId, newDate, calculatedPriority);
       await saveLog(taskId, 'UPDATE', 'Prazo de entrega alterado');
     } catch (err: any) {
       alert('Erro ao atualizar prazo: ' + err.message);
@@ -183,10 +128,7 @@ export function useTasks() {
 
   const handleUpdateStores = async (taskId: string, storeIds: string[]) => {
     try {
-      const taskRef = doc(db, 'tasks', taskId);
-      await updateDoc(taskRef, {
-        store_ids: storeIds
-      });
+      await taskService.updateTaskStores(taskId, storeIds);
       await saveLog(taskId, 'UPDATE', 'Lojas vinculadas alteradas');
     } catch (err: any) {
       alert('Erro ao atualizar lojas vinculadas: ' + err.message);

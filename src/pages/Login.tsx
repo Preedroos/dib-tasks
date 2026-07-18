@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLogin } from '../hooks/useLogin';
 
 export function Login() {
-    const { user } = useAuth();
+    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const {
         email,
@@ -19,10 +19,10 @@ export function Login() {
     const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
-        if (user) {
+        if (isAuthenticated) {
             navigate('/dashboard', { replace: true });
         }
-    }, [user, navigate]);
+    }, [isAuthenticated, navigate]);
 
     return (
         <div className="min-h-screen flex flex-col font-body-lg text-on-background relative bg-transparent">

@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { LoadingScreen } from './LoadingScreen';
 
 export function ProtectedRoute() {
-    const { user, loading } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
     const [shouldRender, setShouldRender] = useState(loading);
     const [isFadingOut, setIsFadingOut] = useState(false);
 
@@ -28,7 +28,7 @@ export function ProtectedRoute() {
 
     return (
         <>
-            {user ? <Outlet /> : <Navigate to="/login" replace />}
+            {isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />}
             {shouldRender && <LoadingScreen isFadingOut={isFadingOut} />}
         </>
     );
