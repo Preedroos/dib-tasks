@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { RoleType } from '../types';
 import type { Store, User } from './UserManagement';
 import { Header } from '../components/Header';
-import { DataList } from '../components/common/DataList';
+import { DataList } from '../components/common/SearchableList';
 import { FormCard } from '../components/common/FormCard';
 
 export interface UserFormState {
